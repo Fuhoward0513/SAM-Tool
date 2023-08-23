@@ -1,0 +1,4 @@
+model: mobileSAM
+encoder: vit_t
+ckpt: checkpoint/mobile_sam.pt
+device: cuda

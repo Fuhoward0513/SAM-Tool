@@ -1,0 +1,3 @@
+model: fastSAM
+ckpt: checkpoint/FastSAM-x.pt
+device: cuda

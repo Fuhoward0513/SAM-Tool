@@ -1,0 +1,4 @@
+model: SAM
+encoder: vit_b
+ckpt: checkpoint/sam_vit_b_01ec64.pth
+device: cuda
