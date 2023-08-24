@@ -20,6 +20,27 @@ Graphical User Interface (GUI) utilities for image segmentation employing "SAM,"
 ### FastSAM
     python main.py --config configs/fastSAM.yml
 
+## Demonstration
+### Load image
+![Alt text](img/image.png)
+
+### Add prompts
+#### BBox
+![Alt text](img/image-1.png)
+
+#### point
+Left click for valid points  
+Right click for invalid points  
+Middle click for add points as prompts  
+![Alt text](img/image-2.png)
+
+#### Generate segmentation
+![Alt text](img/image-3.png)
+
+#### Generate mask labels
+![Alt text](img/image-4.png)
+
+
 
 ## Reference
 SAM: https://github.com/facebookresearch/segment-anything  
