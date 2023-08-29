@@ -12,8 +12,10 @@ class sam_ImageAnnotationTool:
         self.height = 400
         self.canvas = tk.Canvas(self.root, width=self.width,  height=self.height)
         self.canvas.pack(fill=tk.BOTH, expand=True)
+        
         self.sam_model = sam_model
-
+        self.sam_model.warmup()
+        
         # load image
         self.image = None
         self.image_path = None

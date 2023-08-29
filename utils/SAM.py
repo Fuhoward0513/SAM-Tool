@@ -57,6 +57,15 @@ class SAM:
         except:
             print('No box')
 
+    def warmup(self):   # warmup gpu
+        dummy_input = torch.randn(3, 1024, 1024).to(self.device)
+        self.predictor.set_image(dummy_input)
+        _ = self.predictor.predict_torch(
+            point_coords=None,
+            point_labels=None,
+            boxes = None,
+            multimask_output=False)
+    
     def segment_prompt(self, img, input_points=None, input_labels=None, input_boxes=None):
         
         boxes_torch, points_torch, labels_torch, transformed_boxes = None, None, None, None

@@ -2,6 +2,7 @@ from FastSAM.fastsam import FastSAM, FastSAMPrompt
 import os
 import time
 import numpy as np
+import torch
 
 class MyFastSAM:
     def __init__(self, ckpt, device):
@@ -9,6 +10,10 @@ class MyFastSAM:
         self.device = device
         self.masks = None
         self.model = FastSAM(self.checkpoint)
+    
+    def warmup(self):
+        dummy_input = torch.randn(1, 3, 1024, 1024).to(self.device)
+        _ = self.model(dummy_input)
     
     def segment(self, img_pth, mode, input=None, label=None):
         
