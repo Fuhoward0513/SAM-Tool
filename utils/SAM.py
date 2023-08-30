@@ -1,4 +1,5 @@
 import cv2
+import os
 import torch
 import numpy as np
 import time
@@ -66,15 +67,29 @@ class SAM:
             boxes = None,
             multimask_output=False)
     
-    def segment_prompt(self, img, input_points=None, input_labels=None, input_boxes=None):
+    def segment_all(self, img, img_pth):
+        mask_generator = SamAutomaticMaskGenerator(self.sam) # generate masks for an entire image
+        masks = mask_generator.generate(img)
+        
+        plt.figure()
+        plt.imshow(img)
+        self.show_anns(masks)
+        id = self.get_img_id(img_pth)   # save result
+        plt.savefig(f'./output/{id}.png')
+        plt.axis('off')
+        plt.show()
+    
+    def segment_prompt(self, img, img_pth, input_points=None, input_labels=None, input_boxes=None):
         
         boxes_torch, points_torch, labels_torch, transformed_boxes = None, None, None, None
         
         t0 = time.time()
-        self.predictor.set_image(img)
+        self.predictor.set_image(img)   # set image to predictor
         
+        ############### inspect prompt types #################
         if(len(input_points)==0 and len(input_boxes)==0):
-            print('No prompt!')
+            print('No prompt! Segment everything')
+            self.segment_all(img, img_pth)
             return
         
         if(len(input_points)!=0 and len(input_boxes)!=0):   # check number of points == number of boxes
@@ -93,20 +108,24 @@ class SAM:
         else:
             points_torch = None
             labels_torch = None
-            
-        masks, scores, logits = self.predictor.predict_torch(
-            point_coords=points_torch,
-            point_labels=labels_torch,
-            boxes = transformed_boxes,
-            multimask_output=False
+        
+        ############# generate masks with prompts ############
+        masks, scores, logits = self.predictor.predict_torch(   
+            point_coords=points_torch,  # B * N * (x, y)
+            point_labels=labels_torch,  # B * N
+            boxes = transformed_boxes,  # B * (x1, y1, x2, y2)
+            multimask_output=False  # True: three most possible mask outputs
         )
         
         print('runtime:',(time.time()-t0))
         
+        ############## visualization ###############
         plt.figure()
         plt.imshow(img)
         
-        print(f'mask shape: {masks.shape}')
+        id = self.get_img_id(img_pth)   # save result
+        plt.savefig(f'./output/{id}.png')
+        # print(f'mask shape: {masks.shape}')
         
         for mask in masks:
             self.show_mask(mask.cpu().numpy(), plt.gca(), random_color=True)
@@ -123,7 +142,9 @@ class SAM:
         
         masks = tuple(mask.cpu().numpy() for mask in masks)
         masks = np.asarray(masks)
-        
         self.masks = masks
-        print(self.masks.shape)
-        # return masks
+    
+    def get_img_id(self, img_path):
+        image_name = os.path.basename(img_path)
+        root, extension = os.path.splitext(image_name)
+        return root

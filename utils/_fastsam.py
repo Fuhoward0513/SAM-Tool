@@ -1,8 +1,10 @@
 from FastSAM.fastsam import FastSAM, FastSAMPrompt
+import matplotlib.pyplot as plt
 import os
 import time
 import numpy as np
 import torch
+from PIL import Image
 
 class MyFastSAM:
     def __init__(self, ckpt, device):
@@ -24,22 +26,30 @@ class MyFastSAM:
         ann = None
         if(mode=='everything'):
             ann = prompt_process.everything_prompt()
+            self.masks = np.array(ann.cpu())
         elif(mode=='bbox' and input is not None):
             ann = prompt_process.box_prompt(bboxes=input)
+            self.masks = np.array(ann)
         elif(mode=='point' and input is not None):
             ann = prompt_process.point_prompt(points=input, pointlabel=label)
+            self.masks = np.array(ann)
         elif(mode=='text' and input is not None):
             ann = prompt_process.text_prompt(text=input)
+            self.masks = np.array(ann)
         else:
             print('wrong mode')
             return 0
         print('runtime:', (time.time()-t0))
-        self.masks = np.array(ann)
-        print(np.array(self.masks).shape)
+        
+        # print(np.array(self.masks).shape)
         
         
         id = self.get_img_id(img_pth)
-        prompt_process.plot(annotations=ann, output_path=f'./output/{id}.png',)
+        prompt_process.plot(annotations=ann, output_path=f'./output/{id}.png',) # save image
+        res = Image.open(f'./output/{id}.png')  # show image
+        plt.figure()
+        plt.imshow(res)
+        plt.show()
     
     def get_img_id(self, img_path):
         image_name = os.path.basename(img_path)

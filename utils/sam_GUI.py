@@ -167,7 +167,8 @@ class sam_ImageAnnotationTool:
     def make_seg(self):
         img = cv2.imread(self.image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        self.sam_model.segment_prompt(img, input_points=np.array(self.points_list), # Find segmentation using SAM
+        self.sam_model.segment_prompt(img, self.image_path, # Find segmentation using SAM
+                                      input_points=np.array(self.points_list), 
                                       input_labels=np.array(self.labels_list),
                                       input_boxes=np.array(self.bbox_list))
         

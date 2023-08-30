@@ -16,7 +16,7 @@ class fastsam_ImageAnnotationTool:
         self.sam_model = sam_model
         self.sam_model.warmup()
         
-        self.mode = None
+        self.mode = 'everything'
 
         # load image
         self.image = None
@@ -133,9 +133,9 @@ class fastsam_ImageAnnotationTool:
     
     def label_point(self):
         self.mode = 'point'
-        self.canvas.bind("<ButtonPress-1>", self.draw_valid_point)
-        self.canvas.bind("<ButtonPress-3>", self.draw_remove_point)
-        self.canvas.bind("<ButtonPress-2>",self.save_points)
+        self.canvas.bind("<ButtonPress-1>", self.draw_valid_point)  # left click: valid point
+        self.canvas.bind("<ButtonPress-3>", self.draw_remove_point) # right click: invalid point
+        self.canvas.bind("<ButtonPress-2>",self.save_points)    # middle click: push points
         self.canvas.bind("<ButtonRelease-1>", self.unbind)
         self.canvas.bind("<B1-Motion>", self.unbind)
     
